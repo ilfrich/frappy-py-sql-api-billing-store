@@ -1,4 +1,4 @@
-# Frappy Python Mongo Store for API Billing
+# Frappy Python SQL Store for API Billing
 
 Python SQLAlchemy Store Implementation for Tracking [API Billing](https://github.com/ilfrich/frappy-api-billing) Usage.
 
