@@ -2,6 +2,14 @@
 
 Python SQLAlchemy Store Implementation for Tracking [API Billing](https://github.com/ilfrich/frappy-api-billing) Usage.
 
+## Installation
+
+```shell
+pip install frappysqlapibilling --user
+```
+
+This will also install `flask_sqlalchemy` and `sqlalchemy`, which is required to operate this store implementation.
+
 ## Usage
 
 ```python

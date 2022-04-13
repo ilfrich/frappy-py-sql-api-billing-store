@@ -22,6 +22,8 @@ class UsageStore(AbstractUsageStore):
 
     def __init__(self, sql_db: SQLAlchemy, table_name: str = "api_billing_usage"):
         self.model: DefaultMeta = _create_sql_model(sql_db, table_name)
+        if not sql_db.inspect(sql_db.engine).has_table(table_name):
+            self.model.__table__.create(sql_db.engine)
         self.sql_db: SQLAlchemy = sql_db
 
     def track_usage(self, client_id: Union[str, int], credits_used: Union[int, float]):
@@ -39,12 +41,9 @@ class UsageStore(AbstractUsageStore):
         res = self._filter_all(self._get_session().query(func.sum(self.model.credits)), client_id, start_datetime,
                                end_datetime)
         # fetch the first result
-        query_result = res.first()
-        # check if it exists
-        if query_result is None:
-            return 0
-        # return sum of credits used
-        return query_result[0]
+        query_result = res.all()[0][0]
+        # check if it exists, or return sum
+        return 0 if query_result is None else query_result
 
     def get_daily_usage(self, client_id: Union[str, int], start_datetime: Optional[datetime] = None,
                         end_datetime: Optional[datetime] = None) -> List[Usage]:
@@ -72,7 +71,7 @@ class UsageStore(AbstractUsageStore):
                             end_datetime: Optional[datetime] = None):
         session = self._get_session()
         # compose query
-        res = self._filter_all(session.query, client_id, start_datetime, end_datetime)
+        res = self._filter_all(session.query(self.model), client_id, start_datetime, end_datetime)
         # delete all items affected and commit
         res.delete()
         session.commit()
