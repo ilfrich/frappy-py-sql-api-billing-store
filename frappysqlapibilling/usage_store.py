@@ -6,9 +6,10 @@ from sqlalchemy import func
 from sqlalchemy.orm import scoped_session
 
 
-def _create_sql_model(db: SQLAlchemy) -> DefaultMeta:
+def _create_sql_model(db: SQLAlchemy, table_name: str) -> DefaultMeta:
     # register class
     class UsageModel(db.Model):
+        __tablename__ = table_name
         id = db.Column(db.Integer, primary_key=True)
         client_id = db.Column(db.String)
         timestamp = db.Column(db.Integer)
@@ -19,8 +20,8 @@ def _create_sql_model(db: SQLAlchemy) -> DefaultMeta:
 
 class UsageStore(AbstractUsageStore):
 
-    def __init__(self, sql_db: SQLAlchemy):
-        self.model: DefaultMeta = _create_sql_model(sql_db)
+    def __init__(self, sql_db: SQLAlchemy, table_name: str = "api_billing_usage"):
+        self.model: DefaultMeta = _create_sql_model(sql_db, table_name)
         self.sql_db: SQLAlchemy = sql_db
 
     def track_usage(self, client_id: Union[str, int], credits_used: Union[int, float]):

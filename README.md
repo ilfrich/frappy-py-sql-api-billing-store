@@ -23,7 +23,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 sql_db = SQLAlchemy(app)
 
 # create sql store
-store = UsageStore(sql_db=sql_db)
+store = UsageStore(sql_db=sql_db, table_name="api_billing_usage")  # table name defaults to "api_billing_usage"
 
 # pass the store instance to the api billing constructor
 api_billing = ApiBilling(usage_store=store)
