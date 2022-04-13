@@ -8,7 +8,7 @@ local-uninstall:
 	python3.8 setup.py develop --uninstall --user
 
 clean:
-	rm -f dist/frappymongoapibilling-*
+	rm -f dist/frappysqlapibilling-*
 
 test:
 	pytest
