@@ -32,8 +32,8 @@ class UsageStore(AbstractUsageStore):
         session.add(new_item)
         session.commit()
 
-    def get_total_usage(self, client_id: Union[str, int], start_datetime: datetime,
-                        end_datetime: datetime) -> Union[float, int]:
+    def get_total_usage(self, client_id: Union[str, int], start_datetime: Optional[datetime] = None,
+                        end_datetime: Optional[datetime] = None) -> Union[float, int]:
         # compose query
         res = self._filter_all(self._get_session().query(func.sum(self.model.credits)), client_id, start_datetime,
                                end_datetime)
@@ -45,8 +45,8 @@ class UsageStore(AbstractUsageStore):
         # return sum of credits used
         return query_result[0]
 
-    def get_daily_usage(self, client_id: Union[str, int], start_datetime: datetime,
-                        end_datetime: datetime) -> List[Usage]:
+    def get_daily_usage(self, client_id: Union[str, int], start_datetime: Optional[datetime] = None,
+                        end_datetime: Optional[datetime] = None) -> List[Usage]:
         # compose query
         items = self._filter_all(self.model.query, client_id, start_datetime, end_datetime)
         # process query result
@@ -67,11 +67,11 @@ class UsageStore(AbstractUsageStore):
         # return sorted (by timestamp) list of usage elements
         return list(sorted(result_map.values(), key=lambda x: x.timestamp))
 
-    def delete_client_usage(self, client_id: Union[str, int], opt_start_dt: Optional[datetime] = None,
-                            opt_end_dt: Optional[datetime] = None):
+    def delete_client_usage(self, client_id: Union[str, int], start_datetime: Optional[datetime] = None,
+                            end_datetime: Optional[datetime] = None):
         session = self._get_session()
         # compose query
-        res = self._filter_all(session.query, client_id, opt_start_dt, opt_end_dt)
+        res = self._filter_all(session.query, client_id, start_datetime, end_datetime)
         # delete all items affected and commit
         res.delete()
         session.commit()
